@@ -12,7 +12,7 @@ const reducer = (state, action) => {
     return state;
 };
 
-window.store = createStore(reducer, 0);
+const store = createStore(reducer, 0);
 
 store.subscribe(() => {
     console.log('store changed...', store.getState());
