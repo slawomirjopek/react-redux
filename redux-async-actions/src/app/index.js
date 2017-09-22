@@ -1,7 +1,7 @@
 import { applyMiddleware, createStore } from "redux";
 import axios from "axios";
 import logger from "redux-logger";
-import thunk from "redux-thunk";
+import promise from "redux-promise-middleware";
 
 const initState = {
     fetching: false,
@@ -10,54 +10,51 @@ const initState = {
     error: null
 };
 
-const ACTIONS = {
-    start: "USERS_FETCH_START",
-    receive: "USERS_RECEIVE",
-    error: "USERS_FETCH_ERROR"
+const USER_ACTIONS = {
+    type: "USERS",
+    pending: "USERS_PENDING",
+    receive: "USERS_FULFILLED",
+    error: "USERS_REJECTED"
 };
+
+console.log(USER_ACTIONS);
 
 const reducer = (state = initState, action) => {
     switch(action.type) {
-        case "USERS_FETCH_START": {
+        case USER_ACTIONS.pending: {
             return {
                 ...state,
                 fetching: true
             };
             break;
         }
-        case ACTIONS.receive: {
+        case USER_ACTIONS.receive: {
             return {
                 ...state,
                 fetching: false,
                 fetched: true,
-                users: action.payload
+                users: action.payload.data
             };
             break;
         }
-        case ACTIONS.error: {
+        case USER_ACTIONS.error: {
             return {
                 ...state,
                 fetching: false,
                 fetched: false,
-                error: action.payload
+                error: action.payload.message
             };
-            break
+            break;
         }
     }
 
     return state;
 };
 
-const middleware = applyMiddleware(thunk, logger);
+const middleware = applyMiddleware(promise(), logger);
 const store = createStore(reducer, middleware);
 
-store.dispatch((dispatch) => {
-    dispatch({ type: ACTIONS.start });
-
-    axios.get("https://jsonplaceholder.typicode.com/users")
-        .then((res) => {
-            dispatch({ type: ACTIONS.receive, payload: res.data });
-        }, (err) => {
-            dispatch({ type: ACTIONS.error, payload: err });
-        });
+store.dispatch({
+    type: USER_ACTIONS.type,
+    payload: axios.get("https://jsonplaceholder.typicode.com/users")
 });
