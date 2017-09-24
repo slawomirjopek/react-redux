@@ -6,4 +6,16 @@ const UsersFetch = () => {
     }
 };
 
+const UsersFetchSuccess = () => {
+    return {
+        type: ACTION_CONST.users.fetchSuccess
+    }
+};
+
+const UsersFetchError = () => {
+    return {
+        type: ACTION_CONST.users.fetchError
+    }
+};
+
 export default UsersFetch;
