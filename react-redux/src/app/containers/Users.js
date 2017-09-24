@@ -4,6 +4,7 @@ import React from "react";
 
 import FetchUsers from "../actions/users";
 import UsersList from "../components/UsersList";
+import UsersLoader from "../components/UsersLoader";
 
 class Users extends React.Component {
     constructor() {
@@ -16,6 +17,7 @@ class Users extends React.Component {
         return (
             <div>
                 <button onClick={this.props.actions.fetch}>Fetch users</button>
+                <UsersLoader loading={fetching}/>
                 <UsersList users={users}/>
             </div>
         )
