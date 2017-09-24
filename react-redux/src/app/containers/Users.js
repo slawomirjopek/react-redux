@@ -1,5 +1,6 @@
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import React from "react";
 
 import FetchUsers from "../actions/users";
@@ -23,6 +24,12 @@ class Users extends React.Component {
         )
     }
 }
+
+Users.propTypes = {
+    users: PropTypes.array.isRequired,
+    fetching: PropTypes.bool.isRequired,
+    error: PropTypes.string
+};
 
 function mapStateToProps(state) {
     return {
