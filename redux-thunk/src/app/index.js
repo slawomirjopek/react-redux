@@ -1,5 +1,7 @@
 import { createStore, applyMiddleware } from "redux";
 import logger from "redux-logger";
+import thunk from "redux-thunk";
+import axios from "axios";
 
 const initState = {
     data: null,
@@ -33,11 +35,11 @@ const fetchingFailure = (error) => {
     }
 };
 
-// reducer
+// thunk function
 const reducer = (state = initState, action) => {
     switch (action.type) {
         case ACTION_FETCHING.start: {
-            state = { ...state, fetching: true };
+            state = { ...state, fetching: true, error: false };
             break;
         }
         case ACTION_FETCHING.success: {
@@ -52,5 +54,23 @@ const reducer = (state = initState, action) => {
     return state;
 };
 
+// effect
+const fetchData = () => (dispatch) => {
+    dispatch(fetchingStart());
+
+    return axios.get("https://jsonplaceholder.typicode.com/users")
+        .then((res) => dispatch(fetchingSuccess(res.data)))
+        .catch((err) => {
+            dispatch(fetchingFailure(err));
+            return Promise.reject(err);
+        })
+};
+
 // store
-const store = createStore(reducer, applyMiddleware(logger));
+const store = createStore(reducer, applyMiddleware(logger, thunk));
+
+store.dispatch(fetchData()).then((res) => {
+    console.log("response: ", res);
+}, (err) => {
+    console.log("error: ", err);
+});
